@@ -12,27 +12,6 @@ Please visit the [project website](https://untrix.github.io/i2l/) for a full des
 1. This souce code is written in the python 2.7 eco-system and uses Tensorflow 1.3 (the GPU version), Keras, Pandas, Jupyter Notebook, scipy, h5py and nltk to name a few. This list is not complete, so you'll probably need to import additional python packages as you work with this code. I used [anaconda](https://www.anaconda.com/) to setup a virtual python environment for this project and highly recommend it.
 1. All the experiments were run on Linux (Ubuntu 16.04). All the preprocessing and postprocessing code should work on a Mac as well, but training requires GPUs.
 
-## Hardware
-
-Training was carried out on two Nvidia GeForce 1080Ti cards in [parallel](https://github.com/petewarden/tensorflow_makefile/blob/master/tensorflow/models/image/cifar10/cifar10_multi_gpu_train.py) and all commandline options here assume that. However the code is written to work on any number of cards in parallel, so you should be able to use just 1 or more cards. That said, this is a research project, not a finished product; therefore be prepared to poke at the code should you run into issues. 
-
-You should ideally use two or more GeForce 1080Ti type cards (3584 CUDA cores and 11GB memory) to fully train the model in 2-2.5 days. One 1080Ti will take about 4-5 days to reach the accuracy specified in the paper. If you want to do serious research on a model of this size, I'd recommend 4 GPUs if you can afford it, because research requires 100s of runs (even 1000s). BTW, here's the [parts-list](https://pcpartpicker.com/user/Sumeet0/saved/#view=gFbvVn) of the hardware that I created for this project.
-
-<a href="https://untrix.github.io/i2l/hardware.html"><img src="https://untrix.github.io/i2l/images/IMG_0008%20(cropped).JPG" width="100"/></a>
-<a href="https://untrix.github.io/i2l/hardware.html"><img src="https://untrix.github.io/i2l/images/IMG_0007%20(cropped).JPG" width="100"/></a>
-<a href="https://untrix.github.io/i2l/hardware.html"><img src="https://untrix.github.io/i2l/images/IMG_0006%20(cropped).JPG" width="100"/></a>
-<a href="https://untrix.github.io/i2l/hardware.html"><img src="https://untrix.github.io/i2l/images/IMG_0004.JPG" width="100"/></a>
-<!-- <a href="https://untrix.github.io/i2l/hardware.html"><img src="https://untrix.github.io/i2l/images/IMG_0005%20(cropped).JPG" width="100"/></a> -->
-<!-- <a href="https://untrix.github.io/i2l/hardware.html"><img src="https://untrix.github.io/i2l/images/IMG_0003%20(cropped).JPG" width="100"/></a>
-<a href="https://untrix.github.io/i2l/hardware.html"><img src="https://untrix.github.io/i2l/images/IMG_0002%20(cropped).JPG" width="100"/></a>
-<a href="https://untrix.github.io/i2l/hardware.html"><img src="https://untrix.github.io/i2l/images/IMG_0001%20(cropped).JPG" width="100"/></a> -->
-
-Below are instructions on how to train and evaluate this model. If you train it on my preprocessed dataset (see below), then you should expect to get results very similar to the ones in the [paper](https://arxiv.org/abs/1802.05415).
-
-## Fork this repo
-
-Fork and clone this repo. The instructions that follow assume that you've cloned this repo into `$REPO_DIR=~/im2latex`.
-
 ## Dataset Processing
 
 LaTeX formulas need to be normalized, tokenized, vocabulary extracted and everything placed in a format that the code expects. You can either download all the processed data (800+ MB) from our [website](https://untrix.github.io/i2l/) or process it yourself. If you want to process the data yourself (why? maybe because you want to tokenize it in your own way and create your own vocabulary, or perhaps you want to use your own formula list) then go through the five preprocessing steps under src/preprocessing. There are five jupyter notebooks with inbuilt instructions that normalize, render, tokenize, filter and format the dataset. Run those notebooks and produce the data-files that the pipeline produces. By default the pipeline produces data-bins of size 56 and stores them in a sub-directory `training_56`.
@@ -112,8 +91,3 @@ The model is evaluated by running an evaluation cycle on a snapshot. Evaluation 
         NOTE: Ensure that after training, you didn't change any hyper-parameters inside your code that alter the model materially from the snapshot.
     This will create the same files as the training-cycle except that owing to the `--save-all-eval` option the entire datasets's predictions will be dumped to file test_168100.h5 (instead of just one batch's predictions which is the case with training). Use the same scripts and notebooks mentioned before to view and process the results - or just look at the tensorboard charts. Note: providing the flag `--validate` instead of `--test` does the same thing except that it changes the names in various places to have the string 'test' instead of 'validation'.
 
-### Evaluate Image Match (Optional)
-The above steps will give you corpus BLEU score (testing/bleu2) and edit distance among other metrics. If you also want the visual match metric, then execute instructions in the notebook [$REPO_DIR/src/postprocessing/evaluate_images.ipynb](https://github.com/untrix/im2latex/blob/master/src/postprocessing/evaluate_images.ipynb).
-
-### Running a Trained Model
-We do not provide a graph/code to deploy a model. However, we have cobbled together an way to quickly run a model snapshot against a list of images. Follow the notebook [src/preprocessing/prepare_inferencing_dataset.ipynb](https://github.com/untrix/im2latex/blob/master/src/preprocessing/prepare_inferencing_dataset.ipynb) to create a special dataset for this purpose and then the notebook [src/tools/visualize.ipynb](https://github.com/untrix/im2latex/blob/master/src/tools/visualize.ipynb) for extracting the predictions (from underlying h5py files).
